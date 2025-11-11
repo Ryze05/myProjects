@@ -48,7 +48,7 @@ import kotlinx.coroutines.launch
 )*/
 
 @Composable
-fun Comments(nombre: String) {
+fun Comments(nombre: String, modifier: Modifier) {
     val comments = listOf(
         "Excelente café, me encantó el aroma y sabor.",
         "Muy buen servicio y ambiente agradable.",
@@ -111,7 +111,7 @@ fun Comments(nombre: String) {
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
                 text = nombre,
@@ -225,10 +225,10 @@ fun SimpleSearchBar(
     }
 }
 
-@Preview(showBackground = true)
+/*@Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     My_projectsTheme {
         Comments(nombre = "dd")
     }
-}
+}*/

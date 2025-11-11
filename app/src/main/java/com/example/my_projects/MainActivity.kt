@@ -82,12 +82,13 @@ class MainActivity : ComponentActivity() {
                             }
                         }
 
-
-
-
                         composable("Comments/{nombre}") { backStackEntry ->
-                            val nombre = backStackEntry.arguments?.getString("nombre")?:""
-                            Comments(nombre = nombre)
+                            Scaffold(
+                                topBar = { TopBar() }
+                            ) { innerPadding ->
+                                val nombre = backStackEntry.arguments?.getString("nombre")?:""
+                                Comments(nombre = nombre, modifier = Modifier.padding(innerPadding))
+                            }
                         }
                     }
 

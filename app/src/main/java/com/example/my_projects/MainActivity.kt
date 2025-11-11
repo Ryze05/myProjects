@@ -11,9 +11,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.AccountBox
+import androidx.compose.material.icons.outlined.Face
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Star
@@ -55,10 +59,10 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun NavigationBarSample(navController: NavController) {
     var selectedItem by remember { mutableIntStateOf(0) }
-    val items = listOf("Songs", "Artists", "Playlists")
-    val selectedIcons = listOf(Icons.Filled.Home, Icons.Filled.Favorite, Icons.Filled.Star)
+    val items = listOf("MyPhotos", "CofeeShops", "ElSol")
+    val selectedIcons = listOf(Icons.Filled.AccountBox, Icons.Filled.Favorite, Icons.Filled.Face)
     val unselectedIcons =
-        listOf(Icons.Outlined.Home, Icons.Outlined.FavoriteBorder, Icons.Outlined.Star)
+        listOf(Icons.Outlined.AccountBox, Icons.Outlined.FavoriteBorder, Icons.Outlined.Face)
     NavigationBar {
         items.forEachIndexed { index, item ->
             NavigationBarItem(

@@ -1,6 +1,7 @@
 package com.example.my_projects
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -29,14 +30,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.my_projects.ui.theme.My_projectsTheme
 
@@ -49,7 +54,17 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
 
                 Scaffold(modifier = Modifier.fillMaxSize(), bottomBar = { NavigationBarSample(navController) }) { innerPadding ->
-                    MainProject(modifier = Modifier.padding(innerPadding))
+
+                    NavHost(
+                        navController = navController,
+                        startDestination = "Main",
+                        modifier = Modifier.padding(innerPadding)
+                    ) {
+                        composable("Main") { MainProject() }
+                        composable(Destination.PHOTOS.route,) { Photo() }
+                    }
+
+                    //MainProject(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -58,28 +73,62 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun NavigationBarSample(navController: NavController) {
-    var selectedItem by remember { mutableIntStateOf(0) }
-    val items = listOf("MyPhotos", "CofeeShops", "ElSol")
-    val selectedIcons = listOf(Icons.Filled.AccountBox, Icons.Filled.Favorite, Icons.Filled.Face)
-    val unselectedIcons =
-        listOf(Icons.Outlined.AccountBox, Icons.Outlined.FavoriteBorder, Icons.Outlined.Face)
+
+    var selectedItem by remember { mutableStateOf(0) }
+
     NavigationBar {
-        items.forEachIndexed { index, item ->
+        Destination.entries.forEachIndexed { index, destination ->
             NavigationBarItem(
                 icon = {
                     Icon(
-                        if (selectedItem == index) selectedIcons[index] else unselectedIcons[index],
-                        contentDescription = item,
+                        imageVector =destination.icon,
+                        contentDescription = destination.contentDescription
                     )
                 },
-                label = { Text(item) },
+                label = { Text(destination.label) },
                 selected = selectedItem == index,
-                onClick = { selectedItem = index },
+                onClick = {
+                    selectedItem = index
+                    //Log.d("Navigation", "Navigation to ${destination.route}")
+                    navController.navigate(destination.route)
+                }
             )
         }
     }
 }
 
+
+enum class Destination(
+    val route: String,
+    val icon: ImageVector,
+    val label: String,
+    val contentDescription: String
+) {
+    PHOTOS(
+        route = "Photo",
+        icon = Icons.Filled.AccountBox,
+        label = "MyPhotos",
+        contentDescription = "Go to MyPhotos"
+    ),
+    COFFEE(
+        route = "Coffee",
+        icon = Icons.Filled.Favorite,
+        label = "CoffeeShops",
+        contentDescription = "Go to CoffeeShops"
+    ),
+    SOL(
+        route = "ElSol",
+        icon = Icons.Filled.Face,
+        label = "ElSol",
+        contentDescription = "Go to ElSol"
+    );
+    /*HOME(
+        route = "Main",
+        icon = Icons.Filled.Home,
+        label = "Home",
+        contentDescription = "Go to Home"
+    )*/
+}
 
 
 @Composable

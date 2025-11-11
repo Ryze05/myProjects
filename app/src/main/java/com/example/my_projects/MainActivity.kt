@@ -16,17 +16,27 @@ import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.AccountBox
 import androidx.compose.material.icons.outlined.Face
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -43,6 +53,8 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.my_projects.coffee.CoffeeMain
+import com.example.my_projects.coffee.Comments
 import com.example.my_projects.ui.theme.My_projectsTheme
 
 class MainActivity : ComponentActivity() {
@@ -62,6 +74,21 @@ class MainActivity : ComponentActivity() {
                     ) {
                         composable("Main") { MainProject() }
                         composable(Destination.PHOTOS.route,) { Photo() }
+                        composable(Destination.COFFEE.route) {
+                            Scaffold(
+                                topBar = { TopBar() }
+                            ) { innerPadding ->
+                                CoffeeMain(navController, modifier = Modifier.padding(innerPadding))
+                            }
+                        }
+
+
+
+
+                        composable("Comments/{nombre}") { backStackEntry ->
+                            val nombre = backStackEntry.arguments?.getString("nombre")?:""
+                            Comments(nombre = nombre)
+                        }
                     }
 
                     //MainProject(modifier = Modifier.padding(innerPadding))
@@ -130,6 +157,66 @@ enum class Destination(
     )*/
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopBar() {
+    var expanded by remember { mutableStateOf(false) }
+    var option by remember { mutableStateOf("") }
+
+    //val options = listOf<String>("Compartir", "Album")
+
+    TopAppBar(
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color(0xFFf99aaa),
+            titleContentColor = Color.White,
+        ),
+        title = {
+            Text("CoffeeShops")
+        },
+        navigationIcon = {
+            IconButton(onClick = {}) {
+                Icon(
+                    imageVector = Icons.Filled.Menu,
+                    contentDescription = "Menu",
+                    tint = Color.White
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = { expanded = !expanded }) {
+                Icon(
+                    imageVector = Icons.Filled.MoreVert,
+                    contentDescription = "More options",
+                    tint = Color.White
+                )
+            }
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier
+                    .background(Color(0xFFfbe3e3))
+            ) {
+                DropdownMenuItem(
+                    onClick = {
+                        option = "Compartir"
+                        expanded = false
+                    },
+                    leadingIcon = { Icon(Icons.Filled.Share, contentDescription = null) },
+                    text = { Text("Compartir") }
+                )
+                DropdownMenuItem(
+                    onClick = {
+                        option = "Album"
+                        expanded = false
+                    },
+                    leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = null) },
+                    text = { Text("Album") }
+                )
+            }
+        }
+    )
+}
 
 @Composable
 fun MainProject(modifier: Modifier = Modifier) {

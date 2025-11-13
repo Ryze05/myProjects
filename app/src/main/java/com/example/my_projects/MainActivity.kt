@@ -5,17 +5,26 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
@@ -26,36 +35,52 @@ import androidx.compose.material.icons.outlined.Face
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.elsol.BottomAppBar
+import com.example.elsol.InfoScreen
+import com.example.elsol.SolScreen
 import com.example.my_projects.coffee.CoffeeMain
 import com.example.my_projects.coffee.Comments
 import com.example.my_projects.ui.theme.My_projectsTheme
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,6 +89,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             My_projectsTheme {
                 val navController = rememberNavController()
+                val snackbarHostState = remember { SnackbarHostState() }
+                val scope = rememberCoroutineScope()
+                val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentRoute = navBackStackEntry?.destination?.route
 
                 Scaffold(modifier = Modifier.fillMaxSize(), bottomBar = { NavigationBarSample(navController) }) { innerPadding ->
 
@@ -88,6 +118,178 @@ class MainActivity : ComponentActivity() {
                             ) { innerPadding ->
                                 val nombre = backStackEntry.arguments?.getString("nombre")?:""
                                 Comments(nombre = nombre, modifier = Modifier.padding(innerPadding))
+                            }
+                        }
+
+                        composable("Info") { InfoScreen(modifier = Modifier.padding(innerPadding)) }
+
+                        composable("ElSol") {
+                            ModalNavigationDrawer(
+                                drawerState = drawerState,
+                                drawerContent = {
+                                    ModalDrawerSheet {
+                                        Column(modifier = Modifier.fillMaxWidth()) {
+                                            Image(
+                                                painter = painterResource(R.drawable.espiculas),
+                                                contentDescription = "picture",
+                                                contentScale = ContentScale.Crop,
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(200.dp)
+                                            )
+
+                                            Spacer(modifier = Modifier.height(10.dp))
+
+                                            NavigationDrawerItem(
+                                                label = {
+                                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                                        Icon(
+                                                            Icons.Filled.Build,
+                                                            contentDescription = "Icon build"
+                                                        )
+                                                        Spacer(modifier = Modifier.width(10.dp))
+                                                        Text("Build")
+                                                    }
+                                                },
+                                                selected = (currentRoute == "ElSol"),
+                                                onClick = {
+                                                    navController.navigate("ElSol")
+                                                    scope.launch { drawerState.close() }
+                                                },
+                                                modifier = Modifier.padding(horizontal = 30.dp)
+                                            )
+
+                                            NavigationDrawerItem(
+                                                label = {
+                                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                                        Icon(
+                                                            Icons.Filled.Info,
+                                                            contentDescription = "Icon info"
+                                                        )
+                                                        Spacer(modifier = Modifier.width(10.dp))
+                                                        Text("Info")
+                                                    }
+                                                },
+                                                selected = (currentRoute == "Info"),
+                                                onClick = {
+                                                    navController.navigate("Info")
+                                                    scope.launch { drawerState.close() }
+                                                },
+                                                modifier = Modifier.padding(horizontal = 30.dp)
+                                            )
+
+                                            NavigationDrawerItem(
+                                                label = {
+                                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                                        Icon(
+                                                            Icons.Filled.Email,
+                                                            contentDescription = "Icon email"
+                                                        )
+                                                        Spacer(modifier = Modifier.width(10.dp))
+                                                        Text("Email")
+                                                    }
+                                                },
+                                                selected = (currentRoute == "Email"),
+                                                onClick = {},
+                                                modifier = Modifier.padding(horizontal = 30.dp)
+                                            )
+                                        }
+                                    }
+                                }
+                            ) {
+                                Scaffold(
+                                    snackbarHost = { SnackbarHost(snackbarHostState) },
+                                    bottomBar = { BottomAppBar(drawerState, scope) }
+                                ) { innerPadding ->
+                                    SolScreen(
+                                        modifier = Modifier.padding(innerPadding),
+                                        snackbarHostState,
+                                        scope
+                                    )
+                                }
+                            }
+                        }
+
+                        composable("Info") {
+                            ModalNavigationDrawer(
+                                drawerState = drawerState,
+                                drawerContent = {
+                                    ModalDrawerSheet {
+                                        Column(modifier = Modifier.fillMaxWidth()) {
+                                            Image(
+                                                painter = painterResource(R.drawable.espiculas),
+                                                contentDescription = "picture",
+                                                contentScale = ContentScale.Crop,
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(200.dp)
+                                            )
+
+                                            Spacer(modifier = Modifier.height(10.dp))
+
+                                            NavigationDrawerItem(
+                                                label = {
+                                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                                        Icon(
+                                                            Icons.Filled.Build,
+                                                            contentDescription = "Icon build"
+                                                        )
+                                                        Spacer(modifier = Modifier.width(10.dp))
+                                                        Text("Build")
+                                                    }
+                                                },
+                                                selected = (currentRoute == "ElSol"),
+                                                onClick = {
+                                                    navController.navigate("ElSol")
+                                                    scope.launch { drawerState.close() }
+                                                },
+                                                modifier = Modifier.padding(horizontal = 30.dp)
+                                            )
+
+                                            NavigationDrawerItem(
+                                                label = {
+                                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                                        Icon(
+                                                            Icons.Filled.Info,
+                                                            contentDescription = "Icon info"
+                                                        )
+                                                        Spacer(modifier = Modifier.width(10.dp))
+                                                        Text("Info")
+                                                    }
+                                                },
+                                                selected = (currentRoute == "Info"),
+                                                onClick = {
+                                                    navController.navigate("Info")
+                                                    scope.launch { drawerState.close() }
+                                                },
+                                                modifier = Modifier.padding(horizontal = 30.dp)
+                                            )
+
+                                            NavigationDrawerItem(
+                                                label = {
+                                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                                        Icon(
+                                                            Icons.Filled.Email,
+                                                            contentDescription = "Icon email"
+                                                        )
+                                                        Spacer(modifier = Modifier.width(10.dp))
+                                                        Text("Email")
+                                                    }
+                                                },
+                                                selected = (currentRoute == "Email"),
+                                                onClick = {},
+                                                modifier = Modifier.padding(horizontal = 30.dp)
+                                            )
+                                        }
+                                    }
+                                }
+                            ) {
+                                Scaffold(
+                                    snackbarHost = { SnackbarHost(snackbarHostState) },
+                                    bottomBar = { BottomAppBar(drawerState, scope) }
+                                ) { innerPadding ->
+                                    InfoScreen(modifier = Modifier.padding(innerPadding))
+                                }
                             }
                         }
                     }
